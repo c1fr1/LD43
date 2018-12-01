@@ -235,6 +235,18 @@ public class EnigUtils {
 	public static float clamp(float val, float min, float max) {
 		return Math.max(min, Math.min(max, val));
 	}
+	
+	public static float compareAngles(float angleA, float angleB) {
+		float a = getAngle(angleA);
+		float b = getAngle(angleB);
+		float ret = Math.abs(a - b);
+		if (a < Math.PI) {
+			ret = Math.min(ret, Math.abs(a - b + (float)Math.PI * 2));
+		}else {
+			ret = Math.min(ret, Math.abs(a - b - (float)Math.PI * 2));
+		}
+		return ret;
+	}
 }
 /*
 

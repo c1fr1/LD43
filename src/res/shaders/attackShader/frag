@@ -1,0 +1,13 @@
+#version 330 core
+
+in vec2 texCoords;
+
+out vec4 color;
+
+uniform sampler2D texSampler;
+uniform vec3 atkColor;
+
+void main() {
+    color.xyz = atkColor;
+    color.w = texture(texSampler, texCoords).w;
+}

@@ -110,8 +110,8 @@ public class Camera extends Vector3f {
 	 * @param farDistance maximum render distance
 	 */
 	public Camera(float minDistance, float farDistance) {
-		projectionMatrix = new Matrix4f().ortho(-1f, 1, -1f, 1, minDistance, farDistance);
-		rotationMatrix= new Matrix4f();
+		projectionMatrix = new Matrix4f().ortho(-100f, 100f, -100f, 100f, minDistance, farDistance);
+		rotationMatrix = new Matrix4f();
 		setPos(0f, 0f, 0f);
 	}
 	

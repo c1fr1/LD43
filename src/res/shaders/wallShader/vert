@@ -1,0 +1,13 @@
+#version 330 core
+
+layout (location = 0) in vec3 vertices;
+
+out vec2 worldPosition;
+
+uniform float aspectRatio;
+uniform vec2 camPosition;
+
+void main() {
+	gl_Position = vec4(vertices, 1);
+	worldPosition = vec2(vertices.x * 50 * aspectRatio + camPosition.x, vertices.y * 50 + camPosition.y);
+}

@@ -1,0 +1,15 @@
+#version 330 core
+
+in vec2 worldPosition;
+
+out vec4 color;
+
+uniform vec2 playerPosition;
+uniform float torchStrength;
+
+void main() {
+    float xDist = worldPosition.x - playerPosition.x;
+    float yDist = worldPosition.y - playerPosition.y;
+    float brightness = (xDist * xDist + yDist * yDist) / torchStrength;
+    color = vec4(0, 0, 0, brightness);
+}
