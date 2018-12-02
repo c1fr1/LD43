@@ -156,6 +156,39 @@ public class VAO {
 		boundingBox = new Box3d(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 	
+	public VAO(float x, float y, float width, float height, float left) {
+		vbos = new VBO[1];
+		id = glGenVertexArrays();
+		vaoIDs.add(id);
+		glBindVertexArray(id);
+		vbos[0] = new VBO(new float[] {
+				x - left, y + height, 0f,
+				x - left, y, 0f,
+				x + width, y, 0f,
+				x + width, y + height, 0f
+		}, 3);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+		addVBO(new VBO(new float[] {
+				-left / (width + left), 0f,
+				-left / (width + left), 1f,
+				1f, 1f,
+				1f, 0f
+		}, 2));
+		ibo = glGenBuffers();
+		VBO.vboIDs.add(ibo);
+		indices = squareIndices();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+		verticesPerShape = 3;
+		float minX = x;
+		float maxX = x + width;
+		float minY = y;
+		float maxY = y + height;
+		float minZ = 0f;
+		float maxZ = 0f;
+		boundingBox = new Box3d(minX, minY, minZ, maxX, maxY, maxZ);
+	}
+	
 	/**
 	 * creates a vao (and vbos) from a obj file
 	 * @param path path to the file

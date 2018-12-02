@@ -12,6 +12,8 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 
 import static game.Main.entityObj;
+import static game.Main.gameOverOpacity;
+import static game.Main.titleObj;
 import static game.Shaders.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glDisable;
@@ -28,6 +30,7 @@ public class MainView extends EnigView {
 	public ArrayList<Enemy> enemies = new ArrayList<>();
 	
 	public Texture tile;
+	public Texture gameoverTexture;
 	
 	public MainView(EnigWindow window) {
 		super(window);
@@ -36,11 +39,17 @@ public class MainView extends EnigView {
 		
 		Weapon.loadTextures();
 		Sword.loadFrames();
-		tile = new Texture("res/textures/tile.png");
+		Scythe.loadFrames();
+		Spear.loadFrames();
+		Shield.loadFrames();
+		tile = new Texture("res/textures/tile2.png");
+		gameoverTexture = new Texture("res/textures/gameOverText.png");
 		Player.playerTexture = new Texture("res/textures/player.png");
 		Enemy.enemyTexture = new Texture("res/textures/ghost.png");
 		
-		player.weapons.add(new Sword(player));
+		Player.weapUIObj = new VAO(-5, -5, 10, 10, 1);
+		
+		player.weapons.add(new Scythe(player));
 		player.weapons.get(0).burning = true;
 	}
 	
@@ -48,6 +57,10 @@ public class MainView extends EnigView {
 	public boolean loop() {
 		FBO.prepareDefaultRender();
 		FBO.clearCurrentFrameBuffer();
+		
+		if (UserControls.restart(window)) {
+			restart();
+		}
 		
 		generateEnemies();
 		manageSpawns();
@@ -69,8 +82,9 @@ public class MainView extends EnigView {
 		renderEnemies();
 		renderWall();
 		
-		if (player.weapons.size() > 0) {
-			player.renderWeaponUI(window, getUnTranslatedPerspectiveMatrix());
+		renderUI();
+		if (gameOverOpacity > 0) {
+			float ratio = player.torchStrength / gameOverOpacity;
 		}
 	}
 	
@@ -92,37 +106,68 @@ public class MainView extends EnigView {
 	}
 	
 	public void manageSpawns() {
-		double rand = Math.random();
-		if (Math.random() < 1f / ((float) weapons.size()) || weapons.size() == 0) {
-			if (rand > 0.999) {
-				weapons.add(new Scythe(player));
-			} else if (rand > 0.995) {
-				weapons.add(new Spear(player));
-			} else if (rand > 0.992) {
-				weapons.add(new Shield(player));
-			} else if (rand > 0.98) {
-				weapons.add(new Sword(player));
+		if (gameOverOpacity < 0) {
+			double rand = Math.random();
+			if (Math.random() < 1f / ((float) weapons.size()) || weapons.size() == 0) {
+				if (rand > 0.999) {
+					weapons.add(new Scythe(player));
+				} else if (rand > 0.995) {
+					weapons.add(new Shield(player));
+				} else if (rand > 0.992) {
+					weapons.add(new Sword(player));
+				} else if (rand > 0.98) {
+					weapons.add(new Spear(player));
+				}
 			}
-		}
-		for (int i = 0; i < weapons.size(); ++i) {
-			Weapon w = weapons.get(i);
-			float dist = w.distanceSquared(player);
-			if (dist > player.torchStrength * 2f + 20f) {
-				weapons.remove(i);
-				--i;
-			}else {
-				if (dist < 25) {
-					player.weapons.add(w);
+			for (int i = 0; i < weapons.size(); ++i) {
+				Weapon w = weapons.get(i);
+				float dist = w.distanceSquared(player);
+				if (dist > player.torchStrength * 2f + 20f) {
 					weapons.remove(i);
 					--i;
+				} else {
+					if (dist < 25) {
+						player.weapons.add(w);
+						weapons.remove(i);
+						--i;
+					}
 				}
 			}
 		}
 	}
 	
 	public void generateEnemies() {
-		if (Math.random() < 0.02) {
-			enemies.add(new Enemy(player));
+		if (gameOverOpacity > 0) {
+			if (Math.random() > 0.02) {
+				enemies.add(new Enemy(player));
+			}
+			while (enemies.size() > 1000) {
+				enemies.remove(0);
+			}
+		}else {
+			if (Math.random() < 0.02) {
+				enemies.add(new Enemy(player));
+			}
+		}
+	}
+	
+	public void renderWeaponUI() {
+		if (player.weapons.size() > 0) {
+			if (gameOverOpacity < 0) {
+				player.renderWeaponUI(window, getUnTranslatedPerspectiveMatrix());
+			}
+		}
+	}
+	
+	public void renderUI() {
+		renderWeaponUI();
+		if (gameOverOpacity > 0) {
+			titleShader.enable();
+			titleShader.setUniform(0, 0, getUnTranslatedPerspectiveMatrix());
+			titleShader.setUniform(2, 0, player.x - camPos.x, player.y - camPos.y);
+			titleShader.setUniform(2, 1, 1 - (player.torchStrength / gameOverOpacity));
+			gameoverTexture.bind();
+			titleObj.fullRender();
 		}
 	}
 	
@@ -132,14 +177,29 @@ public class MainView extends EnigView {
 		Enemy.enemyTexture.bind();
 		for (int i = 0; i < enemies.size(); ++i) {
 			Enemy e = enemies.get(i);
-			if (player.shouldKill(e)) {
-				enemies.remove(e);
-				--i;
-				continue;
+			float distsqrd = player.distanceSquared(e);
+			if (gameOverOpacity < 0) {
+				if (distsqrd < 36) {
+					gameOverOpacity = player.torchStrength;
+					for (int j = 0; j < player.weapons.size(); ++j) {
+						if (!player.weapons.get(j).burning) {
+							player.weapons.remove(j);
+							--j;
+						}
+					}
+					player.selectedWeaponIndex = 0;
+				}
+				if (player.shouldKill(e)) {
+					enemies.remove(e);
+					--i;
+					continue;
+				}
 			}
 			float enemyAngle = e.facingAngle(player);
 			textureShader.setUniform(0, 0, getPerspectiveMatrix().translate(e.x, e.y, 0).rotateZ(enemyAngle));
-			e.update(enemyAngle);
+			if (distsqrd > 10) {
+				e.update(enemyAngle);
+			}
 			entityObj.drawTriangles();
 		}
 		entityObj.unbind();
@@ -160,6 +220,25 @@ public class MainView extends EnigView {
 		wallShader.setUniform(2, 0, player);
 		wallShader.setUniform(2, 1, player.torchStrength);
 		Main.screenObj.fullRender();
+	}
+	
+	public void restart() {
+		while (player.weapons.size() > 0) {
+			player.weapons.remove(0);
+		}
+		while (weapons.size() > 0) {
+			weapons.remove(0);
+		}
+		while (enemies.size() > 0) {
+			enemies.remove(0);
+		}
+		camPos.x = 0;
+		camPos.y = 0;
+		gameOverOpacity = -1f;
+		player.x = 0;
+		player.y = 0;
+		player.weapons.add(new Scythe(player));
+		player.weapons.get(0).burning = true;
 	}
 	
 	public Matrix4f getPerspectiveMatrix() {

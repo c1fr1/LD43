@@ -2,6 +2,7 @@ package game;
 
 import engine.OpenGL.EnigWindow;
 import engine.OpenGL.Texture;
+import engine.OpenGL.VAO;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjglx.debug.org.eclipse.jetty.websocket.api.SuspendToken;
@@ -10,11 +11,14 @@ import java.util.ArrayList;
 
 import static game.Main.entityObj;
 import static game.Shaders.textureShader;
+import static game.Shaders.weapUIShader;
 import static game.WeaponType.*;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class Player extends Vector2f {
 	public static Texture playerTexture;
+	public static VAO weapUIObj;
 	
 	public float torchStrength = 1000f;
 	
@@ -40,35 +44,29 @@ public class Player extends Vector2f {
 		float mlength = movement.length();
 		if (mlength > 0.01) {
 			movement.mul(0.15f / movement.length());
+			if (Main.gameOverOpacity > 0) {
+				movement.mul(torchStrength * torchStrength / (Main.gameOverOpacity * Main.gameOverOpacity));
+			}
 			add(movement);
 		}
 		
-		if (weapons.size() > 0) {
-			if (UserControls.weaponUp(w)) {
-				--selectedWeaponIndex;
-			}
-			if (UserControls.weaponDown(w)) {
-				++selectedWeaponIndex;
-			}
-			if (selectedWeaponIndex < 0) {
-				selectedWeaponIndex = 0;
-			}else if (selectedWeaponIndex >= weapons.size()) {
-				selectedWeaponIndex = weapons.size() - 1;
-			}
-			if (UserControls.burn(w)) {
+		if (w.mouseButtons[GLFW_MOUSE_BUTTON_RIGHT] == 1) {
+			if (Main.gameOverOpacity < 0) {
 				weapons.get(selectedWeaponIndex).burning = true;
 			}
 		}
 		
-		if (w.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] > 1) {
-			if (weapons.size() > 0) {
-				if (selectedWeaponIndex < weapons.size()) {
-					if (!weapons.get(selectedWeaponIndex).startAttack(w, this, camPos)) {
-						weapons.remove(selectedWeaponIndex);
-						if (weapons.size() == selectedWeaponIndex) {
-							--selectedWeaponIndex;
-							if (selectedWeaponIndex == -1) {
-								selectedWeaponIndex = 0;
+		if (Main.gameOverOpacity < 0) {
+			if (w.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] > 1) {
+				if (weapons.size() > 0) {
+					if (selectedWeaponIndex < weapons.size()) {
+						if (!weapons.get(selectedWeaponIndex).startAttack(w, this, camPos)) {
+							weapons.remove(selectedWeaponIndex);
+							if (weapons.size() == selectedWeaponIndex) {
+								--selectedWeaponIndex;
+								if (selectedWeaponIndex == -1) {
+									selectedWeaponIndex = 0;
+								}
 							}
 						}
 					}
@@ -81,8 +79,15 @@ public class Player extends Vector2f {
 			Weapon weap = weapons.get(i);
 			if (weap.burning) {
 				weap.durability -= 0.005f;
+				if (Main.gameOverOpacity > 0) {
+					weap.durability -= 0.01;
+					weap.durability *= 0.999f;
+				}
 				if (weap.durability <= 0f) {
 					weapons.remove(i);
+					if (i < selectedWeaponIndex) {
+						--selectedWeaponIndex;
+					}
 					--i;
 					if (weapons.size() > 0) {
 						if (selectedWeaponIndex >= weapons.size()) {
@@ -112,6 +117,9 @@ public class Player extends Vector2f {
 		textureShader.enable();
 		playerTexture.bind();
 		textureShader.setUniform(0, 0, new Matrix4f(perspectiveMatrix).rotateZ(facingAngle(w, camPos)));
+		if (Main.gameOverOpacity > 0) {
+			textureShader.setUniform(2, 0, torchStrength / Main.gameOverOpacity);
+		}
 		entityObj.fullRender();
 		if (weapons.size() > 0) {
 			Weapon selectedWeapon = weapons.get(selectedWeaponIndex);
@@ -136,21 +144,29 @@ public class Player extends Vector2f {
 	}
 	
 	public void renderWeaponUI(EnigWindow w, Matrix4f mat) {
-		textureShader.enable();
+		weapUIShader.enable();
 		Weapon weap;
-		entityObj.prepareRender();
+		weapUIObj.prepareRender();
 		for (int i = 0; i < weapons.size(); ++i) {
 			if (i != selectedWeaponIndex) {
-				textureShader.setUniform(0, 0, mat.translate(w.getAspectRatio() * 50f - 2f, 6 * (selectedWeaponIndex - i), 0f, new Matrix4f()).scale(0.5f));
 				weap = weapons.get(i);
+				float yoffset = 6 * (selectedWeaponIndex - i);
+				if (i < selectedWeaponIndex) {
+					yoffset += 5;
+				}else {
+					yoffset -= 5;
+				}
+				weapUIShader.setUniform(0, 0, mat.translate(w.getAspectRatio() * 50f - 2f, yoffset, 0f, new Matrix4f()).scale(0.5f));
+				weapUIShader.setUniform(2, 0, (float) weap.durability / weap.maxDurability());
 				weap.bindTexture();
-				entityObj.drawTriangles();
+				weapUIObj.drawTriangles();
 			}
 		}
-		textureShader.setUniform(0, 0, mat.translate(w.getAspectRatio() * 50f - 5, 0f, 0f, new Matrix4f()));
 		weap = weapons.get(selectedWeaponIndex);
+		weapUIShader.setUniform(0, 0, mat.translate(w.getAspectRatio() * 50f - 5, 0f, 0f, new Matrix4f()));
+		weapUIShader.setUniform(2, 0, (float) weap.durability / weap.maxDurability());
 		weap.bindTexture();
-		entityObj.drawTriangles();
-		entityObj.unbind();
+		weapUIObj.drawTriangles();
+		weapUIObj.unbind();
 	}
 }

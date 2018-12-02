@@ -16,19 +16,10 @@ import static org.joml.Math.atan2;
 public class Sword extends Weapon {
 	public static Texture[] attackFrames;
 	public static VAO attackVAO;
-	public boolean bloodied;
-	public static void loadFrames() {
-		attackFrames = new Texture[4];
-		for (int i = 0; i < 4; ++i) {
-			attackFrames[i] = new Texture("res/textures/weaponAnims/sword/" + i + ".png");
-		}
-		attackVAO = new VAO(-5, -5, 20, 10);
-	}
 	
 	public Sword(Player p) {
 		super(p);
 		type = sword;
-		durability = 10;
 	}
 	
 	public void renderAttack(Matrix4f matrix) {
@@ -54,5 +45,17 @@ public class Sword extends Weapon {
 			}
 		}
 		return false;
+	}
+	
+	public float maxDurability() {
+		return 10;
+	}
+	
+	public static void loadFrames() {
+		attackFrames = new Texture[4];
+		for (int i = 0; i < 4; ++i) {
+			attackFrames[i] = new Texture("res/textures/weaponAnims/sword/" + i + ".png");
+		}
+		attackVAO = new VAO(-5, -5, 20, 10);
 	}
 }

@@ -1,0 +1,18 @@
+#version 330 core
+
+in vec2 texCoords;
+
+out vec4 color;
+
+uniform sampler2D texSampler;
+uniform float durability;
+
+void main() {
+    color = texture(texSampler, texCoords);
+    if (texCoords.x < 0) {
+        color = vec4(1, 0.8, 0.4, 1);
+    }
+    if (texCoords.y > durability) {
+        color.w *= 0.5;
+    }
+}

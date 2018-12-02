@@ -12,6 +12,7 @@ public class UserControls {
 	public static int[] weaponUp = new int[] {GLFW_KEY_SPACE, GLFW_KEY_UP};
 	public static int[] weaponDown = new int[] {GLFW_KEY_LEFT_SHIFT, GLFW_KEY_DOWN};
 	public static int[] burn = new int[] {GLFW_KEY_B};
+	public static int[] restart = new int[] {GLFW_KEY_R};
 	public static int[] quit = new int[] {GLFW_KEY_ESCAPE};
 	public static float sensitivity = 1f/500f;
 	
@@ -65,6 +66,14 @@ public class UserControls {
 	}
 	public static boolean burn(EnigWindow window) {
 		for (int i: burn) {
+			if (window.keys[i] > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean restart(EnigWindow window) {
+		for (int i: restart) {
 			if (window.keys[i] > 0) {
 				return true;
 			}

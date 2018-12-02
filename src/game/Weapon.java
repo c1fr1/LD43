@@ -31,6 +31,7 @@ public abstract class Weapon extends Vector2f {
 	public float attackAngle = 0;
 	public float durability;
 	public boolean burning;
+	public boolean bloodied;
 	
 	public WeaponType type;
 	
@@ -39,6 +40,7 @@ public abstract class Weapon extends Vector2f {
 		float distance = (float) (sqrt(p.torchStrength) + random() * 10f) + 5f;
 		x = (float) cos(angle) * distance + p.x;
 		y = (float) sin(angle) * distance + p.y;
+		durability = maxDurability();
 	}
 	
 	public boolean startAttack(EnigWindow w, Player player, Vector2f camPos) {
@@ -59,6 +61,8 @@ public abstract class Weapon extends Vector2f {
 	public abstract void renderAttack(Matrix4f matrix);
 	
 	public abstract boolean attackHits(Vector2f position, Vector2f player);
+	
+	public abstract float maxDurability();
 	
 	public static void loadTextures() {
 		swordTexture = new Texture("res/textures/weapons/sword.png");

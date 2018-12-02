@@ -4,6 +4,9 @@ import engine.Entities.Camera;
 import engine.Entities.GameObject;
 import engine.OpenAL.Sound;
 import engine.OpenAL.SoundSource;
+import game.Main;
+import game.MainView;
+import game.UserControls;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -266,6 +269,21 @@ public class EnigWindow {
 			}
 		});
 		
+		glfwSetScrollCallback(id, (long window, double xOffset, double yOffset) -> {
+			if (MainView.main.player.weapons.size() > 0) {
+				if (yOffset > 0) {
+					++MainView.main.player.selectedWeaponIndex;
+				}else {
+					--MainView.main.player.selectedWeaponIndex;
+				}
+				if (MainView.main.player.selectedWeaponIndex < 0) {
+					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();
+				}else if (MainView.main.player.selectedWeaponIndex >= MainView.main.player.weapons.size()) {
+					MainView.main.player.selectedWeaponIndex -= MainView.main.player.weapons.size();
+				}
+			}
+		});
+		
 		
 		// Get the thread stack and push a new frame
 		try ( MemoryStack stack = stackPush() ) {
@@ -390,6 +408,21 @@ public class EnigWindow {
 			}
 		});
 		
+		glfwSetScrollCallback(id, (long window, double xOffset, double yOffset) -> {
+			if (MainView.main.player.weapons.size() > 0) {
+				if (yOffset > 0) {
+					++MainView.main.player.selectedWeaponIndex;
+				}else {
+					--MainView.main.player.selectedWeaponIndex;
+				}
+				if (MainView.main.player.selectedWeaponIndex < 0) {
+					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();
+				}else if (MainView.main.player.selectedWeaponIndex >= MainView.main.player.weapons.size()) {
+					MainView.main.player.selectedWeaponIndex -= MainView.main.player.weapons.size();
+				}
+			}
+		});
+		
 		
 		// Get the thread stack and push a new frame
 		try ( MemoryStack stack = stackPush() ) {
@@ -508,6 +541,21 @@ public class EnigWindow {
 		glfwSetMouseButtonCallback(id, (long window, int button, int action, int mods) -> {
 			if (action >= 0) {
 				mouseButtons[button] = action;
+			}
+		});
+		
+		glfwSetScrollCallback(id, (long window, double xOffset, double yOffset) -> {
+			if (MainView.main.player.weapons.size() > 0) {
+				if (yOffset > 0) {
+					++MainView.main.player.selectedWeaponIndex;
+				}else {
+					--MainView.main.player.selectedWeaponIndex;
+				}
+				if (MainView.main.player.selectedWeaponIndex < 0) {
+					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();
+				}else if (MainView.main.player.selectedWeaponIndex >= MainView.main.player.weapons.size()) {
+					MainView.main.player.selectedWeaponIndex -= MainView.main.player.weapons.size();
+				}
 			}
 		});
 		
