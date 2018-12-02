@@ -1,0 +1,15 @@
+#version 330 core
+
+layout (location = 0) in vec3 vertices;
+layout (location = 1) in vec2 textCoords;
+
+out vec2 positions;
+out vec2 texCoords;
+
+uniform mat4 camera;
+
+void main() {
+	gl_Position = camera * vec4(vertices, 1);
+	texCoords = textCoords;
+	positions = vertices.xy;
+}

@@ -27,7 +27,7 @@ public abstract class Weapon extends Vector2f {
 	
 	public static VAO weapOBJ;
 	
-	public int attackFrame = 0;
+	public int attackFrame = -10;
 	public float attackAngle = 0;
 	public float durability;
 	public boolean burning;
@@ -59,6 +59,8 @@ public abstract class Weapon extends Vector2f {
 	}
 	
 	public abstract void renderAttack(Matrix4f matrix);
+	
+	public abstract void renderIdle(Matrix4f mat);
 	
 	public abstract boolean attackHits(Vector2f position, Vector2f player);
 	

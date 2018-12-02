@@ -19,6 +19,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 public class Player extends Vector2f {
 	public static Texture playerTexture;
 	public static VAO weapUIObj;
+	public static ParticleRenderer particles;
 	
 	public float torchStrength = 1000f;
 	
@@ -53,6 +54,14 @@ public class Player extends Vector2f {
 		if (w.mouseButtons[GLFW_MOUSE_BUTTON_RIGHT] == 1) {
 			if (Main.gameOverOpacity < 0) {
 				weapons.get(selectedWeaponIndex).burning = true;
+				if (MainView.main.tutorialFrame == 0) {
+					MainView.main.tutorialFrame = 1;
+					Enemy e = new Enemy(this);
+					e.x = 0;
+					e.y = 50;
+					MainView.main.enemies.add(e);
+					
+				}
 			}
 		}
 		
@@ -115,22 +124,31 @@ public class Player extends Vector2f {
 	
 	public void renderPlayer(Matrix4f perspectiveMatrix, EnigWindow w, Vector2f camPos) {
 		textureShader.enable();
-		playerTexture.bind();
-		textureShader.setUniform(0, 0, new Matrix4f(perspectiveMatrix).rotateZ(facingAngle(w, camPos)));
-		if (Main.gameOverOpacity > 0) {
-			textureShader.setUniform(2, 0, torchStrength / Main.gameOverOpacity);
+		entityObj.prepareRender();
+		if (weapons.size() > 0) {
+			Weapon weap = weapons.get(selectedWeaponIndex);
+			if (weap.attackFrame > -9f) {
+				weap.renderIdle(new Matrix4f(perspectiveMatrix).rotateZ(weap.attackAngle));
+			}else {
+				weap.renderIdle(new Matrix4f(perspectiveMatrix).rotateZ(facingAngle(w, camPos)));
+			}
 		}
-		entityObj.fullRender();
+		//textureShader.setUniform(0, 0, new Matrix4f(perspectiveMatrix).rotateZ(facingAngle(w, camPos)));
+		
+		//playerTexture.bind();
+		//entityObj.drawTriangles();
+		entityObj.unbind();
 		if (weapons.size() > 0) {
 			Weapon selectedWeapon = weapons.get(selectedWeaponIndex);
 			if (selectedWeapon.attackFrame > 3) {
-				selectedWeapon.renderAttack(perspectiveMatrix);
+				selectedWeapon.renderAttack(new Matrix4f(perspectiveMatrix));
 			}
 			--selectedWeapon.attackFrame;
 			if (selectedWeapon.attackFrame < -10) {
 				selectedWeapon.attackFrame = -10;
 			}
 		}
+		particles.updateAndRender(perspectiveMatrix);
 	}
 	
 	public boolean shouldKill(Vector2f enemy) {

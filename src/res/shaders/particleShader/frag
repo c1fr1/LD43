@@ -1,0 +1,13 @@
+#version 330 core
+
+in vec2 pos;
+
+out vec4 color;
+
+uniform vec3 pcolor;
+uniform float alpha;
+
+void main() {
+    color.xyz = pcolor;
+    color.w = (1 - (pos.x * pos.x + pos.y * pos.y)) * alpha;
+}

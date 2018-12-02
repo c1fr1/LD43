@@ -281,6 +281,10 @@ public class EnigWindow {
 				}else if (MainView.main.player.selectedWeaponIndex >= MainView.main.player.weapons.size()) {
 					MainView.main.player.selectedWeaponIndex -= MainView.main.player.weapons.size();
 				}
+				MainView.main.player.weapons.get(MainView.main.player.selectedWeaponIndex).attackFrame = -10;
+				if (MainView.main.tutorialFrame == 3) {
+					MainView.main.tutorialFrame = -1;
+				}
 			}
 		});
 		
@@ -420,6 +424,10 @@ public class EnigWindow {
 				}else if (MainView.main.player.selectedWeaponIndex >= MainView.main.player.weapons.size()) {
 					MainView.main.player.selectedWeaponIndex -= MainView.main.player.weapons.size();
 				}
+				MainView.main.player.weapons.get(MainView.main.player.selectedWeaponIndex).attackFrame = -10;
+				if (MainView.main.tutorialFrame == 3) {
+					MainView.main.tutorialFrame = -1;
+				}
 			}
 		});
 		
@@ -555,6 +563,10 @@ public class EnigWindow {
 					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();
 				}else if (MainView.main.player.selectedWeaponIndex >= MainView.main.player.weapons.size()) {
 					MainView.main.player.selectedWeaponIndex -= MainView.main.player.weapons.size();
+				}
+				MainView.main.player.weapons.get(MainView.main.player.selectedWeaponIndex).attackFrame = -10;
+				if (MainView.main.tutorialFrame == 3) {
+					MainView.main.tutorialFrame = -1;
 				}
 			}
 		});

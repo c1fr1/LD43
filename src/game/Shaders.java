@@ -10,6 +10,8 @@ public class Shaders {
 	public static ShaderProgram attackShader;
 	public static ShaderProgram titleShader;
 	public static ShaderProgram weapUIShader;
+	public static ShaderProgram buttonShader;
+	public static ShaderProgram particleShader;
 	public static void createMainShaders() {
 		flipShader = new ShaderProgram("flipShader");
 		wallShader = new ShaderProgram("wallShader");
@@ -18,5 +20,7 @@ public class Shaders {
 		attackShader = new ShaderProgram("attackShader");
 		titleShader = new ShaderProgram("titleShader");
 		weapUIShader = new ShaderProgram("weapUIShader");
+		buttonShader = new ShaderProgram("buttonShader");
+		particleShader = new ShaderProgram("particleShader");
 	}
 }

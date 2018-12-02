@@ -32,6 +32,10 @@ public class MainView extends EnigView {
 	public Texture tile;
 	public Texture gameoverTexture;
 	
+	public Texture[] tutorialFrames;
+	
+	public int tutorialFrame = -1;
+	
 	public MainView(EnigWindow window) {
 		super(window);
 		glDisable(GL_DEPTH_TEST);
@@ -44,16 +48,24 @@ public class MainView extends EnigView {
 		Shield.loadFrames();
 		tile = new Texture("res/textures/tile2.png");
 		gameoverTexture = new Texture("res/textures/gameOverText.png");
-		Player.playerTexture = new Texture("res/textures/player.png");
+		Player.playerTexture = new Texture("res/textures/player0.png");
 		Enemy.enemyTexture = new Texture("res/textures/ghost.png");
 		
+		tutorialFrames = new Texture[4];
+		for (int i = 0; i < 4; ++i) {
+			tutorialFrames[i] = new Texture("res/textures/tutorialFrames/" + i + ".png");
+		}
+		
+		Player.particles = new ParticleRenderer(1f, 0.2f, 0f, 50);
 		Player.weapUIObj = new VAO(-5, -5, 10, 10, 1);
 		
 		player.weapons.add(new Scythe(player));
-		player.weapons.get(0).burning = true;
+		
+		if (tutorialFrame == -1) {
+			player.weapons.get(0).burning = true;
+		}
 	}
 	
-	@Override
 	public boolean loop() {
 		FBO.prepareDefaultRender();
 		FBO.clearCurrentFrameBuffer();
@@ -62,14 +74,26 @@ public class MainView extends EnigView {
 			restart();
 		}
 		
-		generateEnemies();
-		manageSpawns();
+		if (tutorialFrame == -1) {
+			generateEnemies();
+		}
+		if (tutorialFrame != 0) {
+			manageSpawns();
+		}
 		
 		renderScene();
 		
 		updateCamera();
 		
+		if (tutorialFrame >= 0) {
+			textureShader.enable();
+			textureShader.setUniform(0, 0, getUnTranslatedPerspectiveMatrix());
+			tutorialFrames[tutorialFrame].bind();
+			titleObj.fullRender();
+		}
+		
 		if (UserControls.quit(window)) {
+			restart();
 			return true;
 		}
 		return false;
@@ -130,6 +154,9 @@ public class MainView extends EnigView {
 						player.weapons.add(w);
 						weapons.remove(i);
 						--i;
+						if (tutorialFrame == 2) {
+							tutorialFrame = 3;
+						}
 					}
 				}
 			}
@@ -192,6 +219,9 @@ public class MainView extends EnigView {
 				if (player.shouldKill(e)) {
 					enemies.remove(e);
 					--i;
+					if (tutorialFrame == 1) {
+						tutorialFrame = 2;
+					}
 					continue;
 				}
 			}

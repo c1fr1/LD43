@@ -9,7 +9,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
 import static engine.EnigUtils.compareAngles;
+import static game.Main.entityObj;
 import static game.Shaders.attackShader;
+import static game.Shaders.textureShader;
 import static game.WeaponType.scythe;
 import static org.joml.Math.PI;
 import static org.joml.Math.atan2;
@@ -36,6 +38,18 @@ public class Scythe extends Weapon {
 		}
 		attackFrameTex.bind();
 		attackVAO.fullRender();
+	}
+	
+	public void renderIdle(Matrix4f mat) {
+		if (attackFrame > 3) {
+			float frameProgress = 1 - ((float) attackFrame - 3f) / 13f;
+			textureShader.setUniform(0, 0, mat.rotateZ((float) -PI * frameProgress).scale(0.5f).translate(0, 5f, 0));
+		}else {
+			float frameProgress = (attackFrame - 3f)/13f + 1f;
+			textureShader.setUniform(0, 0, mat.rotateZ((float) -PI * frameProgress).scale(0.5f).translate(0, 10f, 0).rotateZ((float)PI / 2));
+		}
+		bindTexture();
+		entityObj.drawTriangles();
 	}
 	
 	public boolean attackHits(Vector2f position, Vector2f player) {

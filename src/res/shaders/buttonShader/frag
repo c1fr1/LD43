@@ -8,11 +8,12 @@ out vec4 color;
 uniform vec2 lightPosition;
 uniform float torchStrength;
 uniform sampler2D sampler;
+uniform float selected;
 
 void main() {
     float xDist = positions.x - lightPosition.x;
     float yDist = positions.y - lightPosition.y;
     float alpha = texture(sampler, texCoords).w;
     float brightness = alpha * (torchStrength * 1.2 - ((xDist * xDist + yDist * yDist) / 4000));
-    color = vec4(1, 0.8, 0.5, max(brightness, 0) + 0.05 * alpha);
+    color = vec4(1, 0.8 + selected, 0.5 + selected, max(brightness, 0) + (selected + 0.05) * alpha);
 }
