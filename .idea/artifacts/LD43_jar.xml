@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LD43:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LD43_jar</output-path>
+    <root id="archive" name="LD43.jar">
+      <element id="module-output" name="LD43" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/lwjglCrossPlatformJar.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

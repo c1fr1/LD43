@@ -87,6 +87,7 @@ public class MenuView extends EnigView {
 				if (window.cursorYFloat * 50 > -20) {
 					if (window.cursorYFloat * 50 < -12) {
 						if (window.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] > 1) {
+							window.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] = 0;
 							MainView.main.tutorialFrame = 0;
 							MainView.main.player.weapons.get(0).burning = false;
 							MainView.main.runLoop();

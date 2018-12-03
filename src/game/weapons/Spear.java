@@ -54,7 +54,7 @@ public class Spear extends Weapon {
 		float distance = position.distance(player);
 		if (distance < 30 - attackFrame * 2) {
 			float angleDiff = compareAngles(attackAngle, (float) atan2(position.y - player.y, position.x - player.x));
-			if (angleDiff < 0.1) {
+			if (angleDiff < 0.15) {
 				return true;
 			}
 		}

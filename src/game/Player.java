@@ -5,6 +5,7 @@ import engine.OpenGL.Texture;
 import engine.OpenGL.VAO;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjglx.debug.org.eclipse.jetty.websocket.api.SuspendToken;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import static game.Main.entityObj;
 import static game.Shaders.textureShader;
 import static game.Shaders.weapUIShader;
 import static game.WeaponType.*;
+import static java.lang.Math.random;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
@@ -65,11 +67,44 @@ public class Player extends Vector2f {
 			}
 		}
 		
+		if (weapons.size() > 0) {
+			if (weapons.get(selectedWeaponIndex).type == styreneMonomer) {
+				weapons.get(selectedWeaponIndex).attackFrame = -10;
+			}
+		}
+		
 		if (Main.gameOverOpacity < 0) {
 			if (w.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] > 1) {
 				if (weapons.size() > 0) {
 					if (selectedWeaponIndex < weapons.size()) {
-						if (!weapons.get(selectedWeaponIndex).startAttack(w, this, camPos)) {
+						if (weapons.get(selectedWeaponIndex).type == styreneMonomer) {
+							weapons.get(selectedWeaponIndex).durability -= 0.05f;
+							weapons.get(selectedWeaponIndex).attackFrame = 10;
+							
+							float targetX = w.cursorXFloat * 50 * w.getAspectRatio() + camPos.x - x;
+							float targetY = w.cursorYFloat * 50 + camPos.y - y;
+							
+							Vector2f target = new Vector2f(targetX, targetY);
+							
+							target.normalize(0.4f);
+							add(target);
+							
+							if (weapons.get(selectedWeaponIndex).durability < 0) {
+								MainView.main.sfxSource.setPitch(0.3f + (float) random()/5);
+								MainView.main.sfxSource.playSound(MainView.main.breakingSounds[(int) (random() * 2)]);
+								w.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] = 0;
+								weapons.remove(selectedWeaponIndex);
+								if (weapons.size() == selectedWeaponIndex) {
+									--selectedWeaponIndex;
+									if (selectedWeaponIndex == -1) {
+										selectedWeaponIndex = 0;
+									}
+								}
+							}
+						}else if (!weapons.get(selectedWeaponIndex).startAttack(w, this, camPos)) {
+							MainView.main.sfxSource.setPitch(0.3f + (float) random()/5);
+							MainView.main.sfxSource.playSound(MainView.main.breakingSounds[(int) (random() * 2)]);
+							w.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] = 0;
 							weapons.remove(selectedWeaponIndex);
 							if (weapons.size() == selectedWeaponIndex) {
 								--selectedWeaponIndex;
@@ -147,6 +182,11 @@ public class Player extends Vector2f {
 			if (selectedWeapon.attackFrame < -10) {
 				selectedWeapon.attackFrame = -10;
 			}
+		}
+		if (particles.color.x < 0.999f) {
+			particles.color.x += 0.01f;
+			particles.color.y += 0.002f;
+			particles.color.z -= 0.01f;
 		}
 		particles.updateAndRender(perspectiveMatrix);
 	}

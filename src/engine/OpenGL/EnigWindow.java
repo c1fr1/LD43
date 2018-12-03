@@ -272,9 +272,9 @@ public class EnigWindow {
 		glfwSetScrollCallback(id, (long window, double xOffset, double yOffset) -> {
 			if (MainView.main.player.weapons.size() > 0) {
 				if (yOffset > 0) {
-					++MainView.main.player.selectedWeaponIndex;
-				}else {
 					--MainView.main.player.selectedWeaponIndex;
+				}else {
+					++MainView.main.player.selectedWeaponIndex;
 				}
 				if (MainView.main.player.selectedWeaponIndex < 0) {
 					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();
@@ -415,9 +415,9 @@ public class EnigWindow {
 		glfwSetScrollCallback(id, (long window, double xOffset, double yOffset) -> {
 			if (MainView.main.player.weapons.size() > 0) {
 				if (yOffset > 0) {
-					++MainView.main.player.selectedWeaponIndex;
-				}else {
 					--MainView.main.player.selectedWeaponIndex;
+				}else {
+					++MainView.main.player.selectedWeaponIndex;
 				}
 				if (MainView.main.player.selectedWeaponIndex < 0) {
 					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();
@@ -555,9 +555,9 @@ public class EnigWindow {
 		glfwSetScrollCallback(id, (long window, double xOffset, double yOffset) -> {
 			if (MainView.main.player.weapons.size() > 0) {
 				if (yOffset > 0) {
-					++MainView.main.player.selectedWeaponIndex;
-				}else {
 					--MainView.main.player.selectedWeaponIndex;
+				}else {
+					++MainView.main.player.selectedWeaponIndex;
 				}
 				if (MainView.main.player.selectedWeaponIndex < 0) {
 					MainView.main.player.selectedWeaponIndex += MainView.main.player.weapons.size();

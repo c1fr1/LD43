@@ -15,6 +15,7 @@ public class ParticleRenderer {
 	public Vector3f[] particles;
 	public Vector3f[] colorOffsets;
 	public Vector3f color;
+	public boolean sustained = true;
 	
 	public Vector3f colorOffsetCoeff = new Vector3f(0.25f, 0.25f, 0.25f);
 	
@@ -50,11 +51,15 @@ public class ParticleRenderer {
 			particles[i].z -= 0.01f;
 			
 			if (particles[i].z < 0) {
-				double angle = random() * PI * 2;
-				float distance = (float) random() + 0.1f;
-				particles[i].x = (float) cos(angle) * distance;
-				particles[i].y = (float) sin(angle) * distance;
-				particles[i].z = (float) random();
+				if (sustained) {
+					double angle = random() * PI * 2;
+					float distance = (float) random() + 0.1f;
+					particles[i].x = (float) cos(angle) * distance;
+					particles[i].y = (float) sin(angle) * distance;
+					particles[i].z = (float) random();
+				}else {
+					particles[i].z = 0;
+				}
 			}
 		}
 		screenObj.unbind();

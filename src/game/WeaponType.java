@@ -5,4 +5,5 @@ public enum WeaponType {
 	shield,
 	scythe,
 	spear,
+	styreneMonomer,
 }

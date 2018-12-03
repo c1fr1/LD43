@@ -8,7 +8,6 @@ import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
-import static game.Main.entityObj;
 import static game.Shaders.textureShader;
 import static game.WeaponType.*;
 import static java.lang.Math.*;
@@ -19,6 +18,7 @@ public abstract class Weapon extends Vector2f {
 	public static Texture shieldTexture;
 	public static Texture scytheTexture;
 	public static Texture spearTexture;
+	public static Texture styreneMonomerTexture;
 	
 	public static Texture flamingSwordTexture;
 	public static Texture flamingShieldTexture;
@@ -71,6 +71,7 @@ public abstract class Weapon extends Vector2f {
 		shieldTexture = new Texture("res/textures/weapons/shield.png");
 		scytheTexture = new Texture("res/textures/weapons/scythe.png");
 		spearTexture = new Texture("res/textures/weapons/spear.png");
+		styreneMonomerTexture = new Texture("res/textures/weapons/styrene.png");
 		
 		flamingSwordTexture = new Texture("res/textures/weapons/flamingSword.png");
 		flamingShieldTexture = new Texture("res/textures/weapons/flamingShield.png");
@@ -115,6 +116,8 @@ public abstract class Weapon extends Vector2f {
 			}else {
 				scytheTexture.bind();
 			}
+		}else if (type == styreneMonomer) {
+			styreneMonomerTexture.bind();
 		}
 	}
 }
