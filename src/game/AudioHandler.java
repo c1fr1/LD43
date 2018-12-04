@@ -9,13 +9,14 @@ public class AudioHandler extends TimerTask {
 	public static Sound[] randSounds;
 	public static Sound fightSound;
 	public boolean fighting = false;
+	public static Timer timer;
 	public static void setup() {
 		randSounds = new Sound[6];
 		for (int i = 0; i < randSounds.length; ++i) {
 			randSounds[i] = new Sound("res/sounds/randoms/" + i + ".wav");
 		}
 		fightSound = new Sound("res/sounds/fighting.wav");
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.schedule(new AudioHandler(), 0, 3000);
 	}
 	public void run() {
